@@ -58,6 +58,7 @@ void main() {
             color = ((1.0 - uAlpha) * texelMaterialColor + uAlpha *texelColor) * aVertexColor;
             // color = vec4(texelColor.rgb*aVertexColor.rgb*texelMaterialColor.rgb, texelColor.a);
         break;
+        case 5: color = vec4(aVertexColor.rgb, 1.0);
         default:
             break;
     }
@@ -69,7 +70,7 @@ void main() {
 }
 `;
 
-var mult = 0; //Мой код
+var mult = 0;
 var mode = 1
 let modeTexture = 3
 
@@ -97,14 +98,17 @@ function typeOfTexture(){
     const a = document.querySelector("#typeOfTexture1")
     const b = document.querySelector("#typeOfTexture2")
     const c = document.querySelector("#typeOfTexture3")
+    const d = document.querySelector("#typeOfTexture4")
     if(a.checked)
     modeTexture = 1
     else if(b.checked)
     modeTexture = 2
     else if(c.checked)
     modeTexture = 3
-      else 
+    else if(d.checked) 
       modeTexture = 4
+      else
+      modeTexture = 5
 }
 
 window.onload = function main() {
@@ -550,7 +554,6 @@ function drawCube(gl, programInfo, translation, color, number){
 
 }
 
-/* Мой код */
 function handleKeyDown(e){
     switch(e.keyCode)
     {

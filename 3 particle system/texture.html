@@ -30,24 +30,23 @@
 
     <h3>Тип текстуры</h3>
     <div>
-      <input type="radio" id="typeOfTexture1" name="typeOfTexture" checked onclick="typeOfTexture()">
+      <input type="radio" id="typeOfTexture1" name="typeOfTexture" onclick="typeOfTexture()">
       <label for="typeOfTexture1">Текстура 1: только цифра</label><br>
   
       <input type="radio" id="typeOfTexture2" name="typeOfTexture" onclick="typeOfTexture()">
       <label for="typeOfTexture2">Текстура 2: цифра с цветом</label><br>
 
-      <input type="radio" id="typeOfTexture3" name="typeOfTexture" onclick="typeOfTexture()">
+      <input type="radio" id="typeOfTexture3" name="typeOfTexture" checked onclick="typeOfTexture()">
       <label for="typeOfTexture3">Текстура 3: цифра с деревом</label><br>
 
       <input type="radio" id="typeOfTexture4" name="typeOfTexture" onclick="typeOfTexture()">
-      <label for="typeOfTexture4">Текстура 4: цифра с деревом и цветом</label>
+      <label for="typeOfTexture4">Текстура 4: цифра с деревом и цветом</label><br>
+
+      <input type="radio" id="typeOfTexture5" name="typeOfTexture" onclick="typeOfTexture()">
+      <label for="typeOfTexture5">Текстура выключена</label>
     </div>
 
-      <div id="uiContainer">
-        <div id="ui">
-          <div id="x"></div>
-        </div>
-      </div>
+      
 	<script src="texture.js" defer></script>   
   
   <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js" ></script>
