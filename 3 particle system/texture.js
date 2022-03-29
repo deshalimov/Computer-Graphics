@@ -191,19 +191,15 @@ window.onload = function main() {
         gl.activeTexture(gl.TEXTURE3);
         gl.bindTexture(gl.TEXTURE_2D, collectionTextures[3]);
 
-
     var then = 0;
 
     function render(now) {
         now *= 0.001;  // convert to seconds
         const deltaTime = now - then;
         then = now;
-
         drawScene(gl, programInfo, buffers, collectionTextures, deltaTime);
-
         requestAnimationFrame(render);
     }
-
     requestAnimationFrame(render);
 }
 
@@ -372,7 +368,7 @@ function initBuffers(gl) {
       8,  9,  10,     8,  10, 11,   // top
       12, 13, 14,     12, 14, 15,   // bottom
       16, 17, 18,     16, 18, 19,   // right
-      // 18, 19, 16,     18, 16, 17,   // right
+      //18, 19, 16,     18, 16, 17,   // right
       20, 21, 22,     20, 22, 23,   // left
     ];
   
@@ -380,7 +376,7 @@ function initBuffers(gl) {
   
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
         new Uint16Array(indices), gl.STATIC_DRAW);
-  
+
     // Координаты текстуры
     const textureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
@@ -397,10 +393,10 @@ function initBuffers(gl) {
     0.0,  1.0,
     0.0,  0.0,
     // Top
-    0.0,  0.0,
     1.0,  0.0,
     1.0,  1.0,
     0.0,  1.0,
+    0.0,  0.0,
     // Bottom
     0.0,  0.0,
     1.0,  0.0,
@@ -428,10 +424,8 @@ function initBuffers(gl) {
     };
   }
 
-
 var mvMatrix = mat4.create(); // матрица вида модели
 var pMatrix = mat4.create(); // матрица проекции
-
 
 function setupWebGL(gl) {
     gl.clearColor(0.0, 0.0, 0.1, 1.0);
@@ -462,8 +456,6 @@ function drawScene(gl, programInfo, buffers, collectionTextures, time) {
             
         gl.enableVertexAttribArray(
             programInfo.attribLocations.vertexPosition);
-
-
      
     // Tell WebGL how to pull out the texture coordinates from
   // the texture coordinate buffer into the textureCoord attribute.
@@ -485,33 +477,25 @@ function drawScene(gl, programInfo, buffers, collectionTextures, time) {
 
 // Specify the texture to map onto the faces.
 
-
-
   gl.uniform1i(programInfo.uniformLocations.modeTexture, modeTexture);
   gl.uniform1i(programInfo.uniformLocations.samplerMaterial, 3);
   gl.uniform1f(programInfo.uniformLocations.alpha, alpha);
 
-
-    const xShift = 4.0;
-    /* Левый кубик */
-    drawCube(gl, programInfo, [-1.7 - xShift, 0, 0], [1, 0, 0, 1], 1)
-    /* Правый кубик */
-    drawCube(gl, programInfo, [1.7 + xShift, 0, 0], [0, 1, 0, 1], 2)
-    // // /* Нижний кубик */
-    drawCube(gl, programInfo, [0, 0, 0], [0, 0, 1, 1], 0)
-    // // /* Вверхний кубик */
-    drawCube(gl, programInfo, [0, xShift, 0], [1, 1, 0, 1], 0)
-    
-
+  const xShift = 4.0;
+  /* лево */
+  CreateCub(gl, programInfo, [-1.7 - xShift, 0, 0], [1, 1, 1, 1], xShift, 1)
+  /* право */
+  CreateCub(gl, programInfo, [1.7 + xShift, 0, 0], [1, 0, 0, 1], xShift, 2)
+  /* низ */
+  CreateCub(gl, programInfo, [0, 0, 0], [1, 0, 1, 1], xShift, 0)
+  /* верх */
+  CreateCub(gl, programInfo, [0, xShift, 0], [0, 1, 1, 1], xShift, 0)
 }
 
-function drawCube(gl, programInfo, translation, color, number){
-
-    const xShift = 4.0
+function CreateCub(gl, programInfo, translation, color, xShift, number){
 
     mat4.identity(mvMatrix);
     mat4.lookAt(mvMatrix, [25, 10, 30], [0,0,0], [0,1,0]);
-    // mat3.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5])
 
     if (mode == 1) {
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
@@ -542,9 +526,7 @@ function drawCube(gl, programInfo, translation, color, number){
     else
         gl.uniform1i(programInfo.uniformLocations.uSampler, mat4.create());
 
-
     gl.uniform4fv(programInfo.uniformLocations.vertexColor, color);
-
     {
         const vertexCount = 36;
         const type = gl.UNSIGNED_SHORT;
@@ -572,27 +554,6 @@ function handleKeyDown(e){
             else
                 mult = 1;
             }
-            break;
-
-
-
-       
-
-        case 52:
-        case 100:
-            modeTexture = 1
-            break;
-        case 53:
-        case 101:
-            modeTexture = 2
-            break;
-        case 54:
-        case 102:
-            modeTexture = 3
-            break;
-        case 55:
-        case 103:
-            modeTexture = 4
             break;
     }
 }
