@@ -1,9 +1,8 @@
-@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");
 body {
   margin: 0;
 }
 canvas {
-  width: 1000px;
-  height: 700px;
+  width: 500px;
+  height: 500px;
   display: block;
 }

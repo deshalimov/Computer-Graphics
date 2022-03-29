@@ -1,5 +1,4 @@
 var cubeRotation = 0;
-// Рисует кубик в клеточку
 "use strict";
 
 // Исходный код вершинного шейдера
@@ -144,7 +143,10 @@ window.onload = function main() {
     // gl.disable(gl.DEPTH_TEST);
     const collectionTextures = [
         
-        loadTexture(gl, 'iceice.jpg')
+        loadTexture(gl, '1.png'),
+        loadTexture(gl, '2.png'),
+        loadTexture(gl, '3.png'),
+        loadTexture(gl, 'wood.jpg')
     ]
 
     gl.useProgram(shaderProgram);
@@ -284,40 +286,40 @@ function initBuffers(gl) {
   
     const positions = [
       // Front face
-      -1.0, -1.0,  1.0,
-       1.0, -1.0,  1.0,
-       1.0,  1.0,  1.0,
-      -1.0,  1.0,  1.0,
+      -2.0, -2.0,  2.0,
+       2.0, -2.0,  2.0,
+       2.0,  2.0,  2.0,
+      -2.0,  2.0,  2.0,
   
       // Back face
-      -1.0, -1.0, -1.0,
-      -1.0,  1.0, -1.0,
-       1.0,  1.0, -1.0,
-       1.0, -1.0, -1.0,
+      -2.0, -2.0, -2.0,
+      -2.0,  2.0, -2.0,
+       2.0,  2.0, -2.0,
+       2.0, -2.0, -2.0,
   
       // Top face
-      -1.0,  1.0, -1.0,
-      -1.0,  1.0,  1.0,
-       1.0,  1.0,  1.0,
-       1.0,  1.0, -1.0,
+      -2.0,  2.0, -2.0,
+      -2.0,  2.0,  2.0,
+       2.0,  2.0,  2.0,
+       2.0,  2.0, -2.0,
   
       // Bottom face
-      -1.0, -1.0, -1.0,
-       1.0, -1.0, -1.0,
-       1.0, -1.0,  1.0,
-      -1.0, -1.0,  1.0,
+      -2.0, -2.0, -2.0,
+       2.0, -2.0, -2.0,
+       2.0, -2.0,  2.0,
+      -2.0, -2.0,  2.0,
   
       // Right face
-       1.0, -1.0, -1.0,
-       1.0,  1.0, -1.0,
-       1.0,  1.0,  1.0,
-       1.0, -1.0,  1.0,
+       2.0, -2.0, -2.0,
+       2.0,  2.0, -2.0,
+       2.0,  2.0,  2.0,
+       2.0, -2.0,  2.0,
   
       // Left face
-      -1.0, -1.0, -1.0,
-      -1.0, -1.0,  1.0,
-      -1.0,  1.0,  1.0,
-      -1.0,  1.0, -1.0,
+      -2.0, -2.0, -2.0,
+      -2.0, -2.0,  2.0,
+      -2.0,  2.0,  2.0,
+      -2.0,  2.0, -2.0,
     ];
   
     // Now pass the list of positions into WebGL to build the
@@ -404,7 +406,7 @@ var pMatrix = mat4.create(); // матрица проекции
 
 
 function setupWebGL(gl) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.05, 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     mat4.perspective(pMatrix, 45 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
@@ -462,7 +464,7 @@ function drawScene(gl, programInfo, buffers, collectionTextures, time) {
   gl.uniform1f(programInfo.uniformLocations.alpha, alpha);
 
 
-    const xShift = 2.0;
+    const xShift = 4.0;
     /* Левый кубик */
     drawCube(gl, programInfo, [-xShift, 0, 0], [1, 0, 0, 1], 1)
     /* Правый кубик */
@@ -477,10 +479,10 @@ function drawScene(gl, programInfo, buffers, collectionTextures, time) {
 
 function drawCube(gl, programInfo, translation, color, number){
 
-    const xShift = 8.0
+    const xShift = 4.0
 
     mat4.identity(mvMatrix);
-    mat4.lookAt(mvMatrix, [0, 5, 30], [0,0,0], [0,1,0]);
+    mat4.lookAt(mvMatrix, [25, 10, 30], [0,0,0], [0,1,0]);
     // mat3.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5])
 
     if (mode == 1) {

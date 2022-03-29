@@ -3,7 +3,7 @@ var cubeRotation = 0;
 "use strict";
 
 // Исходный код вершинного шейдера
-const vsSourceGuru = `# version 300 es
+const vsSourceGuro = `# version 300 es
 
 // Координаты вершины. Атрибут, инициализируется через буфер.
 in vec3 aVertexPosition;
@@ -72,7 +72,7 @@ void main() {
 `;
 
 // Исходный код фрагментного шейдера
-const fsSourceGuru = `# version 300 es
+const fsSourceGuro = `# version 300 es
 // WebGl требует явно установить точность флоатов, так что ставим 32 бита
 precision mediump float;
 
@@ -193,8 +193,10 @@ void main() {
 
 }
 `;
-var mult = 0; //Мой код
+var mult = 0;
 var mode = 1
+let modeTexture = 3
+var alpha = 0.5
 
 var ambientLight = 0.5
 var typeAttenuation = true;
@@ -213,23 +215,12 @@ function updatePosition(index) {
   function typeOfRotation(){
       const a = document.querySelector("#typeOfRotation1")
       const b = document.querySelector("#typeOfRotation2")
-      
       if(a.checked)
-      {
         mode = 1
-        console.log(mode)
-      }
       else if(b.checked)
-        {
         mode = 2
-        console.log(mode)
-        }
-      
       else 
-      {
         mode = 3
-        console.log(mode)
-      }
   }
 
 function updateAttenuation() {
@@ -278,8 +269,6 @@ window.onload = function main() {
     }
 
     webglLessonsUI.setupSlider("#x", {value: ambientLight * 10, slide: updatePosition(0), min: 0, max: 10, name: "Мощность фонового источника" });
-
-    //Мой код
     document.addEventListener('keydown', handleKeyDown, true);
 
     // Устанавливаем размер вьюпорта  
@@ -291,7 +280,7 @@ window.onload = function main() {
     // let shaderProgram;
     // Создаём шейдерную программу
     if (shading)
-        shaderProgram = initShaderProgram(gl, vsSourceGuru, fsSourceGuru);
+        shaderProgram = initShaderProgram(gl, vsSourceGuro, fsSourceGuro);
     else
         shaderProgram = initShaderProgram(gl, vsSourcePhong, fsSourcePhong);
 	
@@ -326,8 +315,8 @@ window.onload = function main() {
  
     // Инициализируем буфер
     const buffers = initBuffers(gl)
-    // Устанавливаем используемую программу
-    
+
+
     var then = 0;
 
     function render(now) {
@@ -461,40 +450,40 @@ function initBuffers(gl) {
   
     const vertexNormals = [
       // Front
-       0.0,  0.0,  2.0,
-       0.0,  0.0,  2.0,
-       0.0,  0.0,  2.0,
-       0.0,  0.0,  2.0,
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
+       0.0,  0.0,  1.0,
   
       // Back
-       0.0,  0.0, -2.0,
-       0.0,  0.0, -2.0,
-       0.0,  0.0, -2.0,
-       0.0,  0.0, -2.0,
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
+       0.0,  0.0, -1.0,
   
       // Top
-       0.0,  2.0,  0.0,
-       0.0,  2.0,  0.0,
-       0.0,  2.0,  0.0,
-       0.0,  2.0,  0.0,
+       0.0,  1.0,  0.0,
+       0.0,  1.0,  0.0,
+       0.0,  1.0,  0.0,
+       0.0,  1.0,  0.0,
   
       // Bottom
-       0.0, -2.0,  0.0,
-       0.0, -2.0,  0.0,
-       0.0, -2.0,  0.0,
-       0.0, -2.0,  0.0,
+       0.0, -1.0,  0.0,
+       0.0, -1.0,  0.0,
+       0.0, -1.0,  0.0,
+       0.0, -1.0,  0.0,
   
       // Right
-       2.0,  0.0,  0.0,
-       2.0,  0.0,  0.0,
-       2.0,  0.0,  0.0,
-       2.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
+       1.0,  0.0,  0.0,
   
       // Left
-      -2.0,  0.0,  0.0,
-      -2.0,  0.0,  0.0,
-      -2.0,  0.0,  0.0,
-      -2.0,  0.0,  0.0
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0,
+      -1.0,  0.0,  0.0
     ];
   
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
@@ -567,10 +556,6 @@ var cube = {
 
     rotation: function(angle) {
         return [
-            //Math.cos(angle * mult), 0, Math.sin(angle * mult), 0,
-            //0, 1, 0, 0,
-            //-Math.sin(angle * mult), 0, Math.cos(angle * mult), 0,
-            //0, 0, 0, 1
 			Math.cos(angle), 0, Math.sin(angle), 0,
             0, 1, 0, 0,
             -Math.sin(angle), 0, Math.cos(angle), 0,
@@ -584,14 +569,10 @@ var pMatrix = mat4.create(); // матрица проекции
 var nMatrix = mat3.create(); // матрица нормалей
 
 function setupWebGL(gl) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearColor(0.0, 0.0, 0.05, 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     mat4.perspective(pMatrix, 45 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
-    
-    // mat4.translate(mvMatrix, mvMatrix, [2.0, 0.0, 0.0]);
-    // mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
-    
 }
 
 // var pMatrix, mvMatrix;
@@ -642,32 +623,29 @@ function drawScene(gl, programInfo, buffers, time) {
     gl.uniform1i (programInfo.uniformLocations.lightingModel, lightingModel)
 
     const xShift = 4.0;
-    /* Левый кубик */
-    drawCube(gl, programInfo, [-1.7 - xShift, 0, 0], [1, 1, 1, 1])
-    /* Правый кубик */
-    drawCube(gl, programInfo, [1.7 + xShift, 0, 0], [1, 0, 0, 1])
-    // // /* Нижний кубик */
-    drawCube(gl, programInfo, [0, 0, 0], [0, 0, 1, 1])
-    // // /* Вверхний кубик */
-    drawCube(gl, programInfo, [0, xShift, 0], [0, 0, 1, 1])
+    /* лево */
+    CreateCub(gl, programInfo, [-1.7 - xShift, 0, 0], [1, 1, 1, 1], xShift)
+    /* право */
+    CreateCub(gl, programInfo, [1.7 + xShift, 0, 0], [1, 0, 0, 1], xShift)
+    /* низ */
+    CreateCub(gl, programInfo, [0, 0, 0], [1, 0, 1, 1], xShift)
+    /* верх */
+    CreateCub(gl, programInfo, [0, xShift, 0], [0, 1, 1, 1], xShift)
     
 
 }
 
-function drawCube(gl, programInfo, translation, color){
-
-    const xShift = 4.0
+function CreateCub(gl, programInfo, translation, color, xShift){
 
     mat4.identity(mvMatrix);
     mat4.lookAt(mvMatrix, [25, 10, 30], [0,0,0], [0,1,0]);
 
-    if (mode == 1) {
+    if (mode === 1) {
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
         mat4.translate(mvMatrix, mvMatrix, translation);
-        mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
-        // console.log(mvMatrix)
+        mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]);
     }
-    else if (mode == 2) {
+    else if (mode === 2) {
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
         mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
         mat4.translate(mvMatrix, mvMatrix, translation);
@@ -693,7 +671,6 @@ function drawCube(gl, programInfo, translation, color){
 }
 var lightPosition = { x: 0, y: 0, z: 0}
 
-/* Мой код */
 function handleKeyDown(e){
     switch(e.keyCode)
     {
@@ -715,31 +692,19 @@ function handleKeyDown(e){
             braeak 
         case 39:  // стрелка вправо
         {
-            if(mult === -1)
+            if(mult === 1)
                 mult = 0
                 else
-            mult = 1;
+            mult = -1;
         }
             break;
         case 37:  // стрелка влево
             {
-            if(mult === 1)
+            if(mult === -1)
                 mult = 0
             else
-                mult = -1;
+                mult = 1;
             }
-            break;
-        case 97: // 1
-            //cubeRotation = 0
-            mode = 1
-            break;
-        case 98: // 2
-            //cubeRotation = 0
-            mode = 2
-            break;
-        case 99: //3
-            //cubeRotation = 0
-            mode = 3
             break;
     }
 }
