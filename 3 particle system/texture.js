@@ -82,6 +82,31 @@ function updatePosition(index) {
     };
   }
 
+  function typeOfRotation(){
+    const a = document.querySelector("#typeOfRotation1")
+    const b = document.querySelector("#typeOfRotation2")
+    if(a.checked)
+      mode = 1
+    else if(b.checked)
+      mode = 2
+    else 
+      mode = 3
+}
+
+function typeOfTexture(){
+    const a = document.querySelector("#typeOfTexture1")
+    const b = document.querySelector("#typeOfTexture2")
+    const c = document.querySelector("#typeOfTexture3")
+    if(a.checked)
+    modeTexture = 1
+    else if(b.checked)
+    modeTexture = 2
+    else if(c.checked)
+    modeTexture = 3
+      else 
+      modeTexture = 4
+}
+
 window.onload = function main() {
     // Получаем канвас из html
     const canvas = document.querySelector("#gl_canvas");
@@ -98,7 +123,6 @@ window.onload = function main() {
 
     webglLessonsUI.setupSlider("#x", {value: alpha * 10, slide: updatePosition(0), min: 0, max: 10, name: "Мощность фонового источника" });
 
-    //Мой код
     document.addEventListener('keydown', handleKeyDown, true);
 
     // Устанавливаем размер вьюпорта  
@@ -406,7 +430,7 @@ var pMatrix = mat4.create(); // матрица проекции
 
 
 function setupWebGL(gl) {
-    gl.clearColor(0.0, 0.0, 0.05, 1.0);
+    gl.clearColor(0.0, 0.0, 0.1, 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     mat4.perspective(pMatrix, 45 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
@@ -466,9 +490,9 @@ function drawScene(gl, programInfo, buffers, collectionTextures, time) {
 
     const xShift = 4.0;
     /* Левый кубик */
-    drawCube(gl, programInfo, [-xShift, 0, 0], [1, 0, 0, 1], 1)
+    drawCube(gl, programInfo, [-1.7 - xShift, 0, 0], [1, 0, 0, 1], 1)
     /* Правый кубик */
-    drawCube(gl, programInfo, [xShift, 0, 0], [0, 1, 0, 1], 2)
+    drawCube(gl, programInfo, [1.7 + xShift, 0, 0], [0, 1, 0, 1], 2)
     // // /* Нижний кубик */
     drawCube(gl, programInfo, [0, 0, 0], [0, 0, 1, 1], 0)
     // // /* Вверхний кубик */
@@ -489,7 +513,6 @@ function drawCube(gl, programInfo, translation, color, number){
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
         mat4.translate(mvMatrix, mvMatrix, translation);
         mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
-        // console.log(mvMatrix)
     }
     else if (mode == 2) {
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
@@ -510,7 +533,6 @@ function drawCube(gl, programInfo, translation, color, number){
         programInfo.uniformLocations.modelViewMatrix,
         false,
         mvMatrix);
-
     if (number != null)
         gl.uniform1i(programInfo.uniformLocations.uSampler, number);
     else
@@ -533,26 +555,25 @@ function handleKeyDown(e){
     switch(e.keyCode)
     {
         case 39:  // стрелка вправо
-            mult += 1;
+        {
+            if(mult === 1)
+                mult = 0
+                else
+            mult = -1;
+        }
             break;
         case 37:  // стрелка влево
-            mult += -1;
+            {
+            if(mult === -1)
+                mult = 0
+            else
+                mult = 1;
+            }
             break;
-        case 49:
-        case 97:
-            cubeRotation = 0
-            mode = 1
-            break;
-        case 50:
-        case 98:
-            cubeRotation = 0
-            mode = 2
-            break;
-        case 51:
-        case 99:
-            cubeRotation = 0
-            mode = 3
-            break;
+
+
+
+       
 
         case 52:
         case 100:

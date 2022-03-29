@@ -13,69 +13,39 @@
   </head>
 
   <body>
-    <h1>Кубик в клеточку</h1>
-        
-  <!-- <form>
-    Тип затухания освещенности
-    <div>
-      <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked>
-      <label for="typeAttenuation1">Линейный</label>
-  
-      <input type="radio" id="typeAttenuation2" name="typeAttenuation">
-      <label for="typeAttenuation2">Квадратичный</label>
-    </div>
-    <p></p>
-    Мощность фонового источника
-    <div>
-      <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked>
-      <label for="typeAttenuation1">Линейный</label>
-  
-      <input type="radio" id="typeAttenuation2" name="typeAttenuation">
-      <label for="typeAttenuation2">Квадратичный</label>
-    </div>
-    <div>
-      <button type="submit">Submit</button>
-    </div>
-  </form>  -->
+    <h1>Пьедестал почета</h1>
     <canvas id="gl_canvas" width="1000" height="700"></canvas>
+
+    <h3>Тип вращения</h3>
+    <div>
+      <input type="radio" id="typeOfRotation1" name="typeOfRotation" checked onclick="typeOfRotation()">
+      <label for="typeOfRotation1">Поворот каждого кубика вокруг оси</label><br>
+  
+      <input type="radio" id="typeOfRotation2" name="typeOfRotation" onclick="typeOfRotation()">
+      <label for="typeOfRotation2">Поворот всего пьедестала вокруг оси</label><br>
+
+      <input type="radio" id="typeOfRotation3" name="typeOfRotation" onclick="typeOfRotation()">
+      <label for="typeOfRotation3">Поворот всего пьедестала вокруг оси в глобальной системе координат</label>
+    </div>
+
+    <h3>Тип текстуры</h3>
+    <div>
+      <input type="radio" id="typeOfTexture1" name="typeOfTexture" checked onclick="typeOfTexture()">
+      <label for="typeOfTexture1">Текстура 1: только цифра</label><br>
+  
+      <input type="radio" id="typeOfTexture2" name="typeOfTexture" onclick="typeOfTexture()">
+      <label for="typeOfTexture2">Текстура 2: цифра с цветом</label><br>
+
+      <input type="radio" id="typeOfTexture3" name="typeOfTexture" onclick="typeOfTexture()">
+      <label for="typeOfTexture3">Текстура 3: цифра с деревом</label><br>
+
+      <input type="radio" id="typeOfTexture4" name="typeOfTexture" onclick="typeOfTexture()">
+      <label for="typeOfTexture4">Текстура 4: цифра с деревом и цветом</label>
+    </div>
+
       <div id="uiContainer">
         <div id="ui">
-
-          <!-- Тип затухания освещенности
-          <div>
-            <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked onchange="updateAttenuation()">
-            <label for="typeAttenuation1">Линейный</label><br>
-        
-            <input type="radio" id="typeAttenuation2" name="typeAttenuation" onchange="updateAttenuation()">
-            <label for="typeAttenuation2">Квадратичный</label>
-          </div> -->
-
           <div id="x"></div>
-
-          <!-- Модель освещения
-          <div>
-            <input type="radio" id="lightingModel1" name="lightingModel" value=0 checked onchange="updatelightingModel(this.value)">
-            <label for="lightingModel1">Ламберта</label><br>
-        
-            <input type="radio" id="lightingModel2" name="lightingModel" value=1 onchange="updatelightingModel(this.value)">
-            <label for="lightingModel2">Фонга</label><br>
-
-            <input type="radio" id="lightingModel3" name="lightingModel" value=2 onchange="updatelightingModel(this.value)">
-            <label for="lightingModel3">Блинна-Фонга</label><br>
-
-            <input type="radio" id="lightingModel4" name="lightingModel" value=3 onchange="updatelightingModel(this.value)">
-            <label for="lightingModel4">Тун-шейдерная</label><br>
-          </div>
-
-          Шейдинг
-          <div>
-            <input type="radio" id="shading1" name="shading" checked onchange="updateShading()">
-            <label for="shading1">Гуро</label><br>
-        
-            <input type="radio" id="shading2" name="shading"  onchange="updateShading()">
-            <label for="shading2">Фонг</label>
-          </div> -->
-          <!-- <div id="y"></div> -->
         </div>
       </div>
 	<script src="texture.js" defer></script>   
