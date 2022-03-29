@@ -1,0 +1,43 @@
+/*@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");*/
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+  user-select: none;
+}
+
+h1 { 
+  color: #F90B6D; 
+  font-family: "Open Sans", sans-serif; 
+  font-size: 24px; 
+  font-weight: 300; 
+  line-height: 40px; 
+  
+}
+
+h2 { 
+  color: #F90B6D; 
+  font-family: "Open Sans", sans-serif; 
+  font-size: 18px; 
+  font-weight: 300; 
+  line-height: 32px; 
+}
+
+label { 
+  color: #222; 
+  font-family: "Open Sans", sans-serif; 
+  font-size: 10px; 
+  font-weight: 400; 
+  line-height: 24px; 
+}
+
+body {
+  background: rgb(233, 233, 233); 
+  color: #222; 
+  margin: 0;
+}
+canvas {
+  width: 500px;
+  height: 500px;
+}

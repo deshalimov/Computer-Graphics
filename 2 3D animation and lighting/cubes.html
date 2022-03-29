@@ -1,0 +1,70 @@
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js" 
+      integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ==" crossorigin="anonymous" defer="">
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Пьедестал почета</h1>
+
+    <h2>Тип вращения</h2>
+    <div>
+      <input type="radio" id="typeOfRotation1" name="typeOfRotation" checked onclick="typeOfRotation()">
+      <label for="typeOfRotation1">Поворот каждого кубика вокруг оси</label><br>
+  
+      <input type="radio" id="typeOfRotation2" name="typeOfRotation" onclick="typeOfRotation()">
+      <label for="typeOfRotation2">Поворот всего пьедестала вокруг оси</label><br>
+
+      <input type="radio" id="typeOfRotation3" name="typeOfRotation" onclick="typeOfRotation()">
+      <label for="typeOfRotation3">Поворот всего пьедестала вокруг оси в глобальной системе координат</label>
+    </div>
+
+    <canvas id="gl_canvas" width="920" height="1080"></canvas>
+      <div id="uiContainer">
+        <div id="ui">
+
+        <h2> Тип затухания освещенности</h2>
+          <div>
+            <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked onclick="updateAttenuation()">
+            <label for="typeAttenuation1">Линейный</label><br>
+        
+            <input type="radio" id="typeAttenuation2" name="typeAttenuation" onclick="updateAttenuation()">
+            <label for="typeAttenuation2">Квадратичный</label>
+          </div>
+
+          <div id="x"></div>
+
+        <h2> Модель освещения</h2>
+          <div>
+            <input type="radio" id="lightingModel1" name="lightingModel" checked onclick="updatelightingModel()">
+            <label for="lightingModel1">Ламберта</label><br>
+        
+            <input type="radio" id="lightingModel2" name="lightingModel" onclick="updatelightingModel()">
+            <label for="lightingModel2">Фонга</label>
+          </div>
+
+        <h2>Шейдинг</h2>
+          <div>
+            <input type="radio" id="shading1" name="shading" checked onclick="updateShading()">
+            <label for="shading1">Гуро</label><br>
+        
+            <input type="radio" id="shading2" name="shading" onclick="updateShading()">
+            <label for="shading2">Фонг</label>
+          </div>
+        </div>
+      </div>
+	<script src="cubes.js" defer></script>   
+  
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js" ></script>
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js" ></script>
+</body>
+
+</html>

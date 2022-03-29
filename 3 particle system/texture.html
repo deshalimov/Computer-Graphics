@@ -1,0 +1,87 @@
+<!doctype html>
+
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js" 
+      integrity="sha512-zhHQR0/H5SEBL3Wn6yYSaTTZej12z0hVZKOv3TwCUXT1z5qeqGcXJLLrbERYRScEDDpYIJhPC1fk31gqR783iQ==" crossorigin="anonymous" defer="">
+    </script>
+
+  </head>
+
+  <body>
+    <h1>Кубик в клеточку</h1>
+        
+  <!-- <form>
+    Тип затухания освещенности
+    <div>
+      <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked>
+      <label for="typeAttenuation1">Линейный</label>
+  
+      <input type="radio" id="typeAttenuation2" name="typeAttenuation">
+      <label for="typeAttenuation2">Квадратичный</label>
+    </div>
+    <p></p>
+    Мощность фонового источника
+    <div>
+      <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked>
+      <label for="typeAttenuation1">Линейный</label>
+  
+      <input type="radio" id="typeAttenuation2" name="typeAttenuation">
+      <label for="typeAttenuation2">Квадратичный</label>
+    </div>
+    <div>
+      <button type="submit">Submit</button>
+    </div>
+  </form>  -->
+    <canvas id="gl_canvas" width="1000" height="700"></canvas>
+      <div id="uiContainer">
+        <div id="ui">
+
+          <!-- Тип затухания освещенности
+          <div>
+            <input type="radio" id="typeAttenuation1" name="typeAttenuation" checked onchange="updateAttenuation()">
+            <label for="typeAttenuation1">Линейный</label><br>
+        
+            <input type="radio" id="typeAttenuation2" name="typeAttenuation" onchange="updateAttenuation()">
+            <label for="typeAttenuation2">Квадратичный</label>
+          </div> -->
+
+          <div id="x"></div>
+
+          <!-- Модель освещения
+          <div>
+            <input type="radio" id="lightingModel1" name="lightingModel" value=0 checked onchange="updatelightingModel(this.value)">
+            <label for="lightingModel1">Ламберта</label><br>
+        
+            <input type="radio" id="lightingModel2" name="lightingModel" value=1 onchange="updatelightingModel(this.value)">
+            <label for="lightingModel2">Фонга</label><br>
+
+            <input type="radio" id="lightingModel3" name="lightingModel" value=2 onchange="updatelightingModel(this.value)">
+            <label for="lightingModel3">Блинна-Фонга</label><br>
+
+            <input type="radio" id="lightingModel4" name="lightingModel" value=3 onchange="updatelightingModel(this.value)">
+            <label for="lightingModel4">Тун-шейдерная</label><br>
+          </div>
+
+          Шейдинг
+          <div>
+            <input type="radio" id="shading1" name="shading" checked onchange="updateShading()">
+            <label for="shading1">Гуро</label><br>
+        
+            <input type="radio" id="shading2" name="shading"  onchange="updateShading()">
+            <label for="shading2">Фонг</label>
+          </div> -->
+          <!-- <div id="y"></div> -->
+        </div>
+      </div>
+	<script src="texture.js" defer></script>   
+  
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js" ></script>
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-lessons-ui.js" ></script>
+</body>
+
+</html>
