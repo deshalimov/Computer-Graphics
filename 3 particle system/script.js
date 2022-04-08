@@ -171,10 +171,10 @@ window.onload = function main() {
     // gl.disable(gl.DEPTH_TEST);
     const collectionTextures = [
         
-        loadTexture(gl, '1.png'),
-        loadTexture(gl, '2.png'),
-        loadTexture(gl, '3.png'),
-        loadTexture(gl, 'wood.jpg')
+        loadTexture(gl, 'pictures/1.png'),
+        loadTexture(gl, 'pictures/2.png'),
+        loadTexture(gl, 'pictures/3.png'),
+        loadTexture(gl, 'pictures/wood.jpg')
     ]
 
     gl.useProgram(shaderProgram);
