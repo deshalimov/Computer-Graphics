@@ -56,9 +56,10 @@ void main() {
         break;
         case 4:
             color = ((1.0 - uAlpha) * texelMaterialColor + uAlpha *texelColor) * aVertexColor;
-            // color = vec4(texelColor.rgb*aVertexColor.rgb*texelMaterialColor.rgb, texelColor.a);
         break;
-        case 5: color = vec4(aVertexColor.rgb, 1.0);
+        case 5: 
+            color = vec4(aVertexColor.rgb, 1.0);
+        break;
         default:
             break;
     }

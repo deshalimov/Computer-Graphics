@@ -19,53 +19,75 @@ uniform vec3 uDiffuseLightColor;
 uniform vec3 uSpecularLightColor;
 
 out vec3 vLightWeighting;
+
 const float shininess = 16.0;
 
-uniform bool typeAttenuation;
-uniform bool lightingModel;
+uniform int typeAttenuation;
+uniform int lightingModel;
 
 void main() {
     // установка позиции наблюдателя сцены
     vec4 vertexPositionEye4 = uMVMatrix * vec4(aVertexPosition, 1.0);
     vec3 vertexPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;
-   
+    float dist = 0.0;
     // получаем вектор направления света
     vec3 lightDirection;
-    if (typeAttenuation)
-        lightDirection = normalize(uLightPosition - vertexPositionEye3);
-    else 
-        lightDirection = normalize((uLightPosition - vertexPositionEye3)*(uLightPosition - vertexPositionEye3));
-     
+    lightDirection = uLightPosition - vertexPositionEye3;
+    dist = length(lightDirection);
+    if(typeAttenuation == 1) dist = dist * dist;
+
+    lightDirection = normalize(lightDirection);
+
     // получаем нормаль
     vec3 normal = normalize(uNMatrix * aVertexNormal);
-     
-    if (lightingModel) {
-        // получаем скалярное произведение векторов нормали и направления света
-        float lambertTerm = max(dot(normal, lightDirection), 0.0);
-     
-        // отраженный свет равен диффузному отражению света
-       vLightWeighting = uDiffuseLightColor * lambertTerm;
-    }
-    else
-    {
-        // получаем скалярное произведение векторов нормали и направления света
-        float diffuseLightDot = max(dot(normal, lightDirection), 0.0);
-                                            
-        // получаем вектор отраженного луча и нормализуем его
-        vec3 reflectionVector = normalize(reflect(-lightDirection, normal));
-        
-        // установка вектора камеры
-        vec3 viewVectorEye = -normalize(vertexPositionEye3);
-        
-        float specularLightDot = max(dot(reflectionVector, viewVectorEye), 0.0);
-        
-        float specularLightParam = pow(specularLightDot, shininess);
     
-        // отраженный свет равен сумме фонового, диффузного и зеркального отражений света
-        vLightWeighting = uAmbientLightColor + uDiffuseLightColor * diffuseLightDot +
-                        uSpecularLightColor * specularLightParam;
+    switch(lightingModel) {
+        case 0:
+            // получаем скалярное произведение векторов нормали и направления света
+            float lambertTerm = max(dot(normal, lightDirection), 0.0);
+        
+            // отраженный свет равен диффузному отражению света
+            vLightWeighting = (uDiffuseLightColor * lambertTerm) / dist;
+            break;
+        case 1:
+            // получаем скалярное произведение векторов нормали и направления света
+            float diffuseLightDot = max(dot(normal, lightDirection), 0.0);
+                                                
+            // получаем вектор отраженного луча и нормализуем его
+            vec3 reflectionVector = normalize(reflect(-lightDirection, normal));
+            
+            // установка вектора камеры
+            vec3 viewVectorEye = -normalize(vertexPositionEye3);
+            
+            float specularLightDot = max(dot(reflectionVector, viewVectorEye), 0.0);
+            
+            float specularLightParam = pow(specularLightDot, shininess);
+        
+            // отраженный свет равен сумме фонового, диффузного и зеркального отражений света
+            vLightWeighting = uAmbientLightColor + (uDiffuseLightColor * diffuseLightDot +
+                            uSpecularLightColor * specularLightParam) / dist;
+            break;
+        case 2:
+            // получаем скалярное произведение векторов нормали и направления света
+            diffuseLightDot = max(dot(normal, lightDirection), 0.0);
+                                                
+            
+            // установка вектора камеры
+            viewVectorEye = -normalize(vertexPositionEye3);
+            vec3 h = (lightDirection + viewVectorEye) / 2.0;
+            specularLightDot = max(dot(h, normal), 0.0);
+            
+            specularLightParam = pow(specularLightDot, shininess);
+        
+            // отраженный свет равен сумме фонового, диффузного и зеркального отражений света
+            vLightWeighting = uAmbientLightColor + (uDiffuseLightColor * diffuseLightDot +
+                            uSpecularLightColor * specularLightParam) / dist;
+            break;
+        case 3:
+            
+            break;
+        
     }
-
     // Finally transform the geometry
     gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 }
@@ -85,10 +107,7 @@ uniform vec4 aVertexColor;
 
 void main() {
     // Тут происходит магия, чтобы кубик выглядел красиво
-    
       color = vec4(vLightWeighting * aVertexColor.rgb, aVertexColor.a);
-
-
 }
 `;
 
@@ -105,28 +124,32 @@ uniform mat3 uNMatrix;
 
 uniform vec3 uLightPosition;
 
-uniform bool typeAttenuation;
-uniform bool lightingModel;
+uniform int typeAttenuation;
 
 out vec3 vLightWeighting;
 
 out vec3 lightDirection;
 out vec3 normal;
 out vec3 viewVectorEye;
-const float shininess = 16.0;
+out float dist;
 
 
 void main() {
     // установка позиции наблюдателя сцены
     vec4 vertexPositionEye4 = uMVMatrix * vec4(aVertexPosition, 1.0);
     vec3 vertexPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;
+    lightDirection = (uLightPosition - vertexPositionEye3);
    
     // получаем вектор направления света
-    if (typeAttenuation)
-        lightDirection = uLightPosition - vertexPositionEye3);
-    else 
-        lightDirection = (uLightPosition - vertexPositionEye3)*(uLightPosition - vertexPositionEye3);
-     
+    switch(typeAttenuation) {
+        case 0:
+            dist = length(lightDirection);
+            break;
+        case 1: 
+            dist = length(lightDirection) * length(lightDirection);
+            break;
+    }
+
     // получаем нормаль
     normal = normalize(uNMatrix * aVertexNormal);
 
@@ -142,66 +165,106 @@ const fsSourcePhong = `# version 300 es
 // WebGl требует явно установить точность флоатов, так что ставим 32 бита
 precision mediump float;
 
-in vec lightDirection;
+in vec3 lightDirection;
 
-in vec3 vLightWeighting;
 in vec3 normal;
 in vec3 viewVectorEye;
+in float dist;
 
 uniform vec3 uAmbientLightColor;
 uniform vec3 uDiffuseLightColor;
 uniform vec3 uSpecularLightColor;
+uniform int lightingModel;
+
+vec3 vLightWeighting;
 
 uniform vec4 aVertexColor;
+const float shininess = 16.0;
 
 // Цвет, который будем отрисовывать
 out lowp vec4 color; 
 void main() {
 
-    lightDirection = normalize(lightDirection);
-    normal = normalize(normal);
+    vec3 vLightDirection = normalize(lightDirection);
+    vec3 vNormal = normalize(normal);
 
-    if (lightingModel) {
-        // получаем скалярное произведение векторов нормали и направления света
-        float lambertTerm = max(dot(normal, lightDirection), 0.0);
-     
-        // отраженный свет равен диффузному отражению света
-       vLightWeighting = uDiffuseLightColor * lambertTerm;
+    switch(lightingModel) {
+        case 0:
+            // Ламберт 
+            // получаем скалярное произведение векторов нормали и направления света
+            float diffuseLightDot = max(dot(vNormal, vLightDirection), 0.0);
+        
+            // отраженный свет равен диффузному отражению света
+            vLightWeighting = (uDiffuseLightColor * diffuseLightDot)/dist;
+
+            color = vec4(vLightWeighting * aVertexColor.rgb, aVertexColor.a);
+            break;
+        case 1:
+            // Фонг
+            // получаем скалярное произведение векторов нормали и направления света
+            diffuseLightDot = max(dot(vNormal, vLightDirection), 0.0);
+                                                
+            // получаем вектор отраженного луча и нормализуем его
+            vec3 reflectionVector = normalize(reflect(-vLightDirection, vNormal));
+            
+            // установка вектора камеры
+            vec3 vViewVectorEye = normalize(viewVectorEye);
+            
+            // зеркальное это максимум из вектора отраженного 
+            float specularLightDot = max(dot(reflectionVector, vViewVectorEye), 0.0);
+            
+            float specularLightParam = pow(specularLightDot, shininess);
+        
+            // отраженный свет равен сумме фонового, диффузного и зеркального отражений света
+            vLightWeighting = uAmbientLightColor + (uDiffuseLightColor * diffuseLightDot  +
+                            uSpecularLightColor * specularLightParam) / dist;
+
+            color = vec4(vLightWeighting * aVertexColor.rgb, aVertexColor.a);
+            break;
+        case 2:
+            // Блинн-Фонг
+            // получаем скалярное произведение векторов нормали и направления света
+            diffuseLightDot = max(dot(vNormal, vLightDirection), 0.0);
+                                                
+            
+            // установка вектора камеры
+            vViewVectorEye = normalize(viewVectorEye);
+            vec3 h = (vLightDirection + vViewVectorEye) / 2.0;
+            specularLightDot = max(dot(h, vNormal), 0.0);
+            
+            specularLightParam = pow(specularLightDot, shininess);
+        
+            // отраженный свет равен сумме фонового, диффузного и зеркального отражений света
+            vLightWeighting = uAmbientLightColor + (uDiffuseLightColor * diffuseLightDot +
+                            uSpecularLightColor * specularLightParam)/dist;
+
+            color = vec4(vLightWeighting * aVertexColor.rgb, aVertexColor.a);
+            break;
+        case 3:
+            // Тун-Шейдинг
+            diffuseLightDot = max(dot(vNormal, vLightDirection), 0.0);
+            if (diffuseLightDot > 0.95) {
+                vLightWeighting = aVertexColor.rgb;
+            } else if (diffuseLightDot > 0.75) {
+                vLightWeighting = aVertexColor.rgb * 0.7;
+            } else if (diffuseLightDot > 0.55) {
+                vLightWeighting = aVertexColor.rgb * 0.3;
+            } else {
+                vLightWeighting = aVertexColor.rgb * 0.1;
+            }
+            
+            color = vec4(vLightWeighting/dist, aVertexColor.a);
+            break;
     }
-    else
-    {
-        // получаем скалярное произведение векторов нормали и направления света
-        float diffuseLightDot = max(dot(normal, lightDirection), 0.0);
-                                            
-        // получаем вектор отраженного луча и нормализуем его
-        vec3 reflectionVector = normalize(reflect(-lightDirection, normal));
-        
-        // установка вектора камеры
-        viewVectorEye = normalize(viewVectorEye);
-        
-        float specularLightDot = max(dot(reflectionVector, viewVectorEye), 0.0);
-        
-        float specularLightParam = pow(specularLightDot, shininess);
-    
-        // отраженный свет равен сумме фонового, диффузного и зеркального отражений света
-        vLightWeighting = uAmbientLightColor + uDiffuseLightColor * diffuseLightDot +
-                        uSpecularLightColor * specularLightParam;
-    }
-
-    // Тут происходит магия, чтобы кубик выглядел красиво
-      color = vec4(vLightWeighting * aVertexColor.rgb, aVertexColor.a);
-
 }
 `;
-var mult = 0;
+var mult = 0; //Мой код
 var mode = 1
-let modeTexture = 3
-var alpha = 0.5
 
-var ambientLight = 0.5
-var typeAttenuation = true;
-var lightingModel = true;
-var shading = true;
+var ambientLight = 0.1
+var typeAttenuation = 0
+var lightingModel = 0;
+var shading = document.querySelector("#shading1").checked;
 
 let shaderProgram;
 
@@ -212,48 +275,41 @@ function updatePosition(index) {
     };
   }
 
-  function typeOfRotation(){
-      const a = document.querySelector("#typeOfRotation1")
-      const b = document.querySelector("#typeOfRotation2")
-      if(a.checked)
-        mode = 1
-      else if(b.checked)
-        mode = 2
-      else 
-        mode = 3
-  }
-
-function updateAttenuation() {
-        const typeAttenuationId = document.querySelector("#typeAttenuation1");
-        if (typeAttenuationId.checked)
-            typeAttenuation= true
-        else 
-            typeAttenuation= false
+  function updateAtten(){
+    const a = document.querySelector("#li1")
+    if(a.checked)
+        typeAttenuation = 0
+        else typeAttenuation = 1
 }
 
-function rotationPjedestal(){
-    const a = document.querySelector("#rotation1")
-    if (a.checked)
-        rotate1 = true
-    else 
-        rotate1 = false
+function lightMod(){
+    const a = document.querySelector("#light1")
+    const b = document.querySelector("#light2")
+    const c = document.querySelector("#light3")
 
-}
-
-function updatelightingModel() {
-    const lightingModelId = document.querySelector("#lightingModel1");
-    if (lightingModelId.checked)
-        lightingModel = true
-    else 
-        lightingModel = false
+    if(a.checked)
+    lightingModel = 0
+    else if(b.checked)
+    lightingModel = 1
+    else if(c.checked)
+    lightingModel = 2
+    else
+    lightingModel = 3
 }
 
 function updateShading() {
-    const shadingId = document.querySelector("#shading1");
-    if (shadingId.checked)
-        shading = true
-    else 
-        shading = false
+    const shading = document.querySelector("#shading1").checked;
+    const canvas = document.querySelector("#gl_canvas");
+    // Получаем контекст webgl2
+    const gl = canvas.getContext("webgl2");
+    if (shading) // гуро
+    {
+        shaderProgram = initShaderProgram(gl, vsSourceGuro, fsSourceGuro);
+    }
+    else // фонг
+    {
+        shaderProgram = initShaderProgram(gl, vsSourcePhong, fsSourcePhong);
+    }
 }
 
 window.onload = function main() {
@@ -269,6 +325,8 @@ window.onload = function main() {
     }
 
     webglLessonsUI.setupSlider("#x", {value: ambientLight * 10, slide: updatePosition(0), min: 0, max: 10, name: "Мощность фонового источника" });
+
+    //Мой код
     document.addEventListener('keydown', handleKeyDown, true);
 
     // Устанавливаем размер вьюпорта  
@@ -278,45 +336,17 @@ window.onload = function main() {
     gl.enable(gl.DEPTH_TEST);
 
     // let shaderProgram;
+
     // Создаём шейдерную программу
     if (shading)
         shaderProgram = initShaderProgram(gl, vsSourceGuro, fsSourceGuro);
     else
-        shaderProgram = initShaderProgram(gl, vsSourcePhong, fsSourcePhong);
-	
-    
-    // Для удобства создадим объект с информацией о программе
-    const programInfo = {
-        // Сама программа
-        program: shaderProgram,
-        // Расположение параметров-аттрибутов в шейдере
-        
-        attribLocations: {
-            vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-            vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
-        },
-		uniformLocations: {
-            modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uMVMatrix'),
-            projectionMatrix: gl.getUniformLocation(shaderProgram, 'uPMatrix'),
-            normalMatrix: gl.getUniformLocation(shaderProgram, 'uNMatrix'),
-
-            lightPosition: gl.getUniformLocation(shaderProgram, 'uLightPosition'),
-            ambientLightColor: gl.getUniformLocation(shaderProgram, 'uAmbientLightColor'),
-            diffuseLightColor: gl.getUniformLocation(shaderProgram, 'uDiffuseLightColor'),
-            specularLightColor: gl.getUniformLocation(shaderProgram, 'uSpecularLightColor'),
-
-            vertexColor: gl.getUniformLocation(shaderProgram, 'aVertexColor'),
-
-            typeAttenuation: gl.getUniformLocation(shaderProgram, 'typeAttenuation'),
-            lightingModel: gl.getUniformLocation(shaderProgram, 'lightingModel'),
-            
-        }
-    };
- 
+        shaderProgram = initShaderProgram(gl, vsSourcePhong, fsSourcePhong);  
+     
     // Инициализируем буфер
     const buffers = initBuffers(gl)
-
-
+    // Устанавливаем используемую программу
+    
     var then = 0;
 
     function render(now) {
@@ -363,7 +393,7 @@ function loadShader(gl, type, source) {
 
     return shader;
 }
-
+let programInfo;
 // Функция инициализации шейдерной программы
 function initShaderProgram(gl, vsSource, fsSource) {
     // Загружаем вершинный шейдер
@@ -383,6 +413,33 @@ function initShaderProgram(gl, vsSource, fsSource) {
         return null;
     }
 
+    // Для удобства создадим объект с информацией о программе
+    programInfo = {
+        // Сама программа
+        program: shaderProgram,
+        // Расположение параметров-аттрибутов в шейдере
+        
+        attribLocations: {
+            vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+            vertexNormal: gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
+        },
+		uniformLocations: {
+            modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uMVMatrix'),
+            projectionMatrix: gl.getUniformLocation(shaderProgram, 'uPMatrix'),
+            normalMatrix: gl.getUniformLocation(shaderProgram, 'uNMatrix'),
+
+            lightPosition: gl.getUniformLocation(shaderProgram, 'uLightPosition'),
+            ambientLightColor: gl.getUniformLocation(shaderProgram, 'uAmbientLightColor'),
+            diffuseLightColor: gl.getUniformLocation(shaderProgram, 'uDiffuseLightColor'),
+            specularLightColor: gl.getUniformLocation(shaderProgram, 'uSpecularLightColor'),
+
+            vertexColor: gl.getUniformLocation(shaderProgram, 'aVertexColor'),
+
+            typeAttenuation: gl.getUniformLocation(shaderProgram, 'typeAttenuation'),
+            lightingModel: gl.getUniformLocation(shaderProgram, 'lightingModel'),
+            
+        }
+    };
     return shaderProgram;
 }
 
@@ -401,40 +458,40 @@ function initBuffers(gl) {
   
     const positions = [
       // Front face
-      -2.0, -2.0,  2.0,
-       2.0, -2.0,  2.0,
-       2.0,  2.0,  2.0,
-      -2.0,  2.0,  2.0,
+      -1.0, -1.0,  1.0,
+       1.0, -1.0,  1.0,
+       1.0,  1.0,  1.0,
+      -1.0,  1.0,  1.0,
   
       // Back face
-      -2.0, -2.0, -2.0,
-      -2.0,  2.0, -2.0,
-       2.0,  2.0, -2.0,
-       2.0, -2.0, -2.0,
+      -1.0, -1.0, -1.0,
+      -1.0,  1.0, -1.0,
+       1.0,  1.0, -1.0,
+       1.0, -1.0, -1.0,
   
       // Top face
-      -2.0,  2.0, -2.0,
-      -2.0,  2.0,  2.0,
-       2.0,  2.0,  2.0,
-       2.0,  2.0, -2.0,
+      -1.0,  1.0, -1.0,
+      -1.0,  1.0,  1.0,
+       1.0,  1.0,  1.0,
+       1.0,  1.0, -1.0,
   
       // Bottom face
-      -2.0, -2.0, -2.0,
-       2.0, -2.0, -2.0,
-       2.0, -2.0,  2.0,
-      -2.0, -2.0,  2.0,
+      -1.0, -1.0, -1.0,
+       1.0, -1.0, -1.0,
+       1.0, -1.0,  1.0,
+      -1.0, -1.0,  1.0,
   
       // Right face
-       2.0, -2.0, -2.0,
-       2.0,  2.0, -2.0,
-       2.0,  2.0,  2.0,
-       2.0, -2.0,  2.0,
+       1.0, -1.0, -1.0,
+       1.0,  1.0, -1.0,
+       1.0,  1.0,  1.0,
+       1.0, -1.0,  1.0,
   
       // Left face
-      -2.0, -2.0, -2.0,
-      -2.0, -2.0,  2.0,
-      -2.0,  2.0,  2.0,
-      -2.0,  2.0, -2.0,
+      -1.0, -1.0, -1.0,
+      -1.0, -1.0,  1.0,
+      -1.0,  1.0,  1.0,
+      -1.0,  1.0, -1.0,
     ];
   
     // Now pass the list of positions into WebGL to build the
@@ -489,8 +546,6 @@ function initBuffers(gl) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
                   gl.STATIC_DRAW);
   
-    // Build the element array buffer; this specifies the indices
-    // into the vertex arrays for each face's vertices.
   
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -556,6 +611,10 @@ var cube = {
 
     rotation: function(angle) {
         return [
+            //Math.cos(angle * mult), 0, Math.sin(angle * mult), 0,
+            //0, 1, 0, 0,
+            //-Math.sin(angle * mult), 0, Math.cos(angle * mult), 0,
+            //0, 0, 0, 1
 			Math.cos(angle), 0, Math.sin(angle), 0,
             0, 1, 0, 0,
             -Math.sin(angle), 0, Math.cos(angle), 0,
@@ -569,10 +628,14 @@ var pMatrix = mat4.create(); // матрица проекции
 var nMatrix = mat3.create(); // матрица нормалей
 
 function setupWebGL(gl) {
-    gl.clearColor(0.0, 0.0, 0.05, 1.0);
+    gl.clearColor(0.0, 0.0, 0.1, 1.0);
     gl.clearDepth(1.0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     mat4.perspective(pMatrix, 45 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
+    
+    // mat4.translate(mvMatrix, mvMatrix, [2.0, 0.0, 0.0]);
+    // mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
+    
 }
 
 // var pMatrix, mvMatrix;
@@ -618,34 +681,36 @@ function drawScene(gl, programInfo, buffers, time) {
 
     setupLights(gl, programInfo)
 
-    // console.log(typeAttenuation)
     gl.uniform1i (programInfo.uniformLocations.typeAttenuation, typeAttenuation)
     gl.uniform1i (programInfo.uniformLocations.lightingModel, lightingModel)
 
-    const xShift = 4.0;
-    /* лево */
-    CreateCub(gl, programInfo, [-1.7 - xShift, 0, 0], [1, 1, 1, 1], xShift)
-    /* право */
-    CreateCub(gl, programInfo, [1.7 + xShift, 0, 0], [1, 0, 0, 1], xShift)
-    /* низ */
-    CreateCub(gl, programInfo, [0, 0, 0], [1, 0, 1, 1], xShift)
-    /* верх */
-    CreateCub(gl, programInfo, [0, xShift, 0], [0, 1, 1, 1], xShift)
+    const xShift = 2.0;
+    // Левый
+    createCub(gl, programInfo, [-xShift, 0, 0], [1, 1, 0, 1])
+    // Правый
+    createCub(gl, programInfo, [xShift, 0, 0], [0, 1, 1, 1])
+    // Нижний
+    createCub(gl, programInfo, [0, 0, 0], [0, 1, 0, 1])
+    // Верхний 
+    createCub(gl, programInfo, [0, xShift, 0], [1, 0, 1, 1])
     
 
 }
 
-function CreateCub(gl, programInfo, translation, color, xShift){
+function createCub(gl, programInfo, translation, color){
+
+    const xShift = 0.0
 
     mat4.identity(mvMatrix);
-    mat4.lookAt(mvMatrix, [25, 10, 30], [0,0,0], [0,1,0]);
+    mat4.lookAt(mvMatrix, [0, 10, 19], [0,0,0], [0,1,0]);
+    // mat3.scale(mvMatrix, mvMatrix, [0.5, 0.5, 0.5])
 
-    if (mode === 1) {
+    if (mode == 1) {
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
         mat4.translate(mvMatrix, mvMatrix, translation);
-        mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]);
+        mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
     }
-    else if (mode === 2) {
+    else if (mode == 2) {
         mat4.translate(mvMatrix, mvMatrix, [xShift, 0.0, 0.0]);
         mat4.rotate(mvMatrix, mvMatrix, cubeRotation, [0, 1, 0]); 
         mat4.translate(mvMatrix, mvMatrix, translation);
@@ -657,40 +722,65 @@ function CreateCub(gl, programInfo, translation, color, xShift){
     }
     mat3.normalFromMat4(nMatrix, mvMatrix);
 
-    gl.uniformMatrix4fv( programInfo.uniformLocations.projectionMatrix, false, pMatrix);
-    gl.uniformMatrix4fv( programInfo.uniformLocations.modelViewMatrix, false, mvMatrix);
-    gl.uniformMatrix3fv( programInfo.uniformLocations.normalMatrix, false, nMatrix);
-    gl.uniform4fv(programInfo.uniformLocations.vertexColor, color);
-	
+    gl.uniformMatrix4fv(
+        programInfo.uniformLocations.projectionMatrix,
+        false,
+        pMatrix);
+    gl.uniformMatrix4fv(
+        programInfo.uniformLocations.modelViewMatrix,
+        false,
+        mvMatrix);
+    gl.uniformMatrix3fv(
+        programInfo.uniformLocations.normalMatrix,
+        false,
+        nMatrix);
+
+        gl.uniform4fv(programInfo.uniformLocations.vertexColor, color);
+
+		
     {
-        const count = 36;
+        const vertexCount = 36;
         const type = gl.UNSIGNED_SHORT;
         const offset = 0;
-        gl.drawElements(gl.TRIANGLES, count, type, offset);
-      }
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+    }
 }
-var lightPosition = { x: 0, y: 0, z: 0}
-
+var lightPosition = {
+    x: 0,
+    y: 0,
+    z: -18
+}
+/* Мой код */
 function handleKeyDown(e){
     switch(e.keyCode)
     {
-        case 87: // клавиша w
+        // движение источника света 
+        case 87: // s
             lightPosition.z += -1
-            console.log(lightPosition)
             break
-        case 83: // клавиша s
+        case 83: // w
             lightPosition.z += 1
-            console.log(lightPosition)
             break 
-        case 65: // клавиша a
+        case 65: // a
             lightPosition.x += -1
-            console.log(lightPosition)
             break 
-        case 68: // клавиша d
+        case 68: // d
             lightPosition.x += 1
+            break 
+        case 69: // e 
+            lightPosition.y += 100
             console.log(lightPosition)
-            braeak 
-        case 39:  // стрелка вправо
+        break
+
+        case 81: // q
+            lightPosition.y -= 100
+            console.log(lightPosition)
+        break
+
+
+
+         // движение платформы   
+         case 39:  // стрелка вправо
         {
             if(mult === 1)
                 mult = 0
@@ -705,6 +795,21 @@ function handleKeyDown(e){
             else
                 mult = 1;
             }
+            break;
+        case 49:
+        case 97:
+            cubeRotation = 0
+            mode = 1
+            break;
+        case 50:
+        case 98:
+            cubeRotation = 0
+            mode = 2
+            break;
+        case 51:
+        case 99:
+            cubeRotation = 0
+            mode = 3
             break;
     }
 }
