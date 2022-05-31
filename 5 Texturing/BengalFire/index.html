@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab6</title>
+</head>
+<body>
+    <canvas width="700" height="500"></canvas>
+    <script type="text/javascript" src="gl-matrix-min.js"></script>
+    <script type="text/javascript" src="webgl-utils.js"></script>
+    <script type="x-shader/x-vertex" id="vertex_spark">
+        attribute vec3 aVertexPosition;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+
+        void main() {
+            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+            // размер искры
+            gl_PointSize = 32.0;
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fragment_spark">
+        precision mediump float;
+
+        uniform sampler2D uTexture;
+
+        void main() {
+            gl_FragColor = texture2D(uTexture, gl_PointCoord);
+        }
+    </script>
+
+    <script type="x-shader/x-vertex" id="vertex_track">
+        attribute vec3 aPosition;
+        attribute vec3 aColor;
+
+        varying vec3 vColor;
+
+        uniform mat4 uMVMatrix;
+        uniform mat4 uPMatrix;
+
+        void main() {
+            vColor = aColor;
+            gl_Position = uPMatrix * uMVMatrix * vec4(aPosition, 1.0);
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="fragment_track">
+        precision mediump float;
+
+        varying vec3 vColor;
+
+        void main() {
+            gl_FragColor = vec4(vColor, 1.0);
+        }
+    </script>
+
+    <script src="index.js"></script>
+</body>
+</html>
